@@ -4,6 +4,7 @@
 #include <stb/stb_image.h>
 
 #include "shaderClass.h"
+#include "Texture.h"
 #include "VAO.h"
 #include "EBO.h"
 
@@ -79,29 +80,10 @@ int main() {
 
 
 	// Texture
-	int widthImg, heightImg, numColCh;
-	unsigned char* bytes = stbi_load("texture.png", &widthImg, &heightImg, &numColCh,0);
+	Texture one_eye("texture.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
 
-	GLuint texture;
-	glGenTextures(1, &texture);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	one_eye.texUnit(shaderProgram, "text0", 0);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthImg, heightImg, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-
-	stbi_image_free(bytes);
-	glBindTexture(GL_TEXTURE_2D,0);
-
-	GLuint tex0Uni = glGetUniformLocation(shaderProgram.ID, "tex0");
-	shaderProgram.Activate();
-	glUniform1i(tex0Uni, 0);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -110,10 +92,11 @@ int main() {
 		// clear color
 		glClear(GL_COLOR_BUFFER_BIT);
 		
+		// bind shader for all later extras
 		shaderProgram.Activate();
 		glUniform1f(uniID, 0.5);
-		glBindTexture(GL_TEXTURE_2D, texture);
-
+		one_eye.Bind();
+		
 		vao1.Bind();
 
 		glDrawElements(GL_TRIANGLES,9, GL_UNSIGNED_INT,0 );
@@ -127,9 +110,9 @@ int main() {
 	vao1.Delete();
 	vbo1.Delete();
 	ebo1.Delete();
+	one_eye.Delete();
 	shaderProgram.Delete(); 
 
-	glDeleteTextures(1, &texture);
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
