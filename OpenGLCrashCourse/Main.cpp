@@ -6,18 +6,6 @@
 #include "EBO.h"
 
 
-const char* vertexShaderSource =
-"\n layout (location = 0) in vec3 aPos;"
-"\n void main(){"
-"\n gl_Position= vec4(aPos.x, aPos.y, aPos.z,1.0);"
-"\n }";
-
-const char* fragmentShaderSource =
-"\n out vec4 FragColor;"
-"\n void main(){"
-"\n		FragColor = vec4(0.8f, 0.3f, 0.02f,1.0);"
-"\n }";
-
 int main() {
 
 	// Init GLFW
@@ -30,12 +18,12 @@ int main() {
 
 	GLfloat vertices[] =
 	{
-		-0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, // Lower left corner
-		0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, // Lower right corner
-		0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f, // Upper corner
-		-0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f, // Inner left
-		0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f, // Inner right
-		0.0f, -0.5f * float(sqrt(3)) / 3, 0.0f // Inner down
+		-0.5f,     -0.5f * float(sqrt(3)) / 3,      0.0f,	 0.8f,  0.3f,   0.02f,		// Lower left corner
+		0.5f,      -0.5f * float(sqrt(3)) / 3,      0.0f,    0.8f,  0.3f,   0.02f, 	// Lower right corner
+		0.0f,       0.5f * float(sqrt(3)) * 2 / 3,  0.0f,    1.0f,  0.6f,   0.32f,		// Upper corner
+		-0.5f / 2,  0.5f * float(sqrt(3)) / 6,      0.0f,	 0.9f,  0.45f,  0.17f,		// Inner left
+		0.5f / 2,   0.5f * float(sqrt(3)) / 6,      0.0f,	 0.9f,  0.45f,  0.17f,		// Inner right
+		0.0f,      -0.5f * float(sqrt(3)) / 3,      0.0f,	 0.8f,  0.3f,   0.02f		// Inner down
 	};
 	GLuint indices[] =
 	{
@@ -74,16 +62,16 @@ int main() {
 	VBO vbo1(vertices, sizeof(vertices));
 	EBO ebo1(indices, sizeof(indices));
 
-	vao1.LinkVBO(vbo1, 0);
+	vao1.LinkAttrib(vbo1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
+	vao1.LinkAttrib(vbo1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 
 	vao1.Unbind();
 	vbo1.Unbind();
 	ebo1.Unbind();
 
 
-	
-	// swap new frame buffer
-	glfwSwapBuffers(window);
+	// Gets ID of uniform called "scale"
+	GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -93,7 +81,8 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		shaderProgram.Activate();
-		
+		glUniform1f(uniID, 0.5);
+
 		vao1.Bind();
 
 		glDrawElements(GL_TRIANGLES,9, GL_UNSIGNED_INT,0 );
