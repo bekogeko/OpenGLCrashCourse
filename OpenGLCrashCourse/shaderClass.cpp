@@ -73,15 +73,17 @@ void Shader::compileErrors(unsigned int shader, const char* type) {
 
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &hasCompiled);
 	glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+
 	
 	if (hasCompiled != GL_FALSE) {
 		return;
 	}
 
 	if (type != "PROGRAM") {
-		std::cout << "SHADER_COMPILATION_ERROR for:" << type << "\n";
+		std::cout << "SHADER_COMPILATION_ERROR for:" << type << "\n" <<infoLog << "\n";
 	}
 	else {
-		std::cout << "SHADER_LINKING_ERROR for:" << type << "\n";
+		std::cout << "SHADER_LINKING_ERROR for:" << type << "\n" << infoLog << "\n";
+
 	}
 }
