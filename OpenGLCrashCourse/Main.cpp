@@ -13,6 +13,9 @@
 #include "EBO.h"
 #include "Camera.h"
 
+const int width = 800;
+const int height = 800;
+
 
 int main() {
 
@@ -92,7 +95,7 @@ int main() {
 
 
 	// Create a glfw window
-	GLFWwindow* window = glfwCreateWindow(600, 600, "Opengl Crash Course", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(width, height, "Opengl Crash Course", NULL, NULL);
 
 	// if there is no window then report error
 	if (window == NULL)
@@ -109,7 +112,7 @@ int main() {
 	gladLoadGL();
 
 	// set viewport for the render in opengl
-	glViewport(0, 0, 600, 600);
+	glViewport(0, 0, width, height);
 
 	Shader shaderProgram("default.vert","default.frag");
 
@@ -169,7 +172,7 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 
-	Camera cam(600, 600,glm::vec3(0,0,2.0f));
+	Camera cam(width, height,glm::vec3(0,0,2.0f));
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -183,6 +186,7 @@ int main() {
 		cam.updateMatrix(45, 0.1f, 100.0f);
 
 		shaderProgram.Activate();
+		glUniform3f(glGetUniformLocation(shaderProgram.ID,"camPos"),cam.Position.x,cam.Position.y,cam.Position.z);
 		cam.Matrix( shaderProgram, "camMatrix");
 
 		//binds the texture so that is appears in rendering
