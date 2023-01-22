@@ -179,6 +179,7 @@ int main()
 	// Delete all the objects we've created
 	shaderProgram.Delete();
 	lightShader.Delete();
+	
 	// Delete window before ending the program
 	glfwDestroyWindow(window);
 	// Terminate GLFW before ending the program
