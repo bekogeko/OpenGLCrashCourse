@@ -18,6 +18,8 @@ std::string getFileContents(const char* filename)
 		return(contents);
 	}
 	throw errno;
+
+
 	
 }
 
@@ -43,7 +45,7 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile) {
 	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
 	// Compile the Vertex Shader into machine code
 	glCompileShader(fragmentShader);
-	compileErrors(vertexShader, "FRAGMENT");
+	compileErrors(fragmentShader, "FRAGMENT");
 
 	// Create Shader Program Object and get its reference
 	ID = glCreateProgram();
@@ -68,22 +70,45 @@ void Shader::Delete() {
 }
 void Shader::compileErrors(unsigned int shader, const char* type) {
 
-	GLint hasCompiled;
-	char infoLog[1024];
+	if (type == "PROGRAM") {
+		// Note the different functions here: glGetProgram* instead of glGetShader*.
+		GLint isLinked = 0;
+		glGetProgramiv(shader, GL_LINK_STATUS, (int*)&isLinked);
+		if (isLinked == GL_FALSE)
+		{
+			GLint maxLength = 0;
+			glGetProgramiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
 
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &hasCompiled);
-	glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+			// The maxLength includes the NULL character
+			std::vector<GLchar> infoLog(maxLength);
+			glGetProgramInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
 
-	
-	if (hasCompiled != GL_FALSE) {
-		return;
-	}
 
-	if (type != "PROGRAM") {
-		std::cout << "SHADER_COMPILATION_ERROR for:" << type << "\n" <<infoLog << "\n";
+			// Use the infoLog as you see fit.
+			std::cout << "ERROR (Program) : " << infoLog.data();
+
+			// In this simple program, we'll just leave
+			return;
+		}
 	}
 	else {
-		std::cout << "SHADER_LINKING_ERROR for:" << type << "\n" << infoLog << "\n";
+		GLint isCompiled = 0;
+		glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
+		if (isCompiled == GL_FALSE)
+		{
+			GLint maxLength = 0;
+			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
 
+			// The maxLength includes the NULL character
+			std::vector<GLchar> infoLog(maxLength);
+			glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
+
+
+			// Use the infoLog as you see fit.	
+			std::cout << "ERROR ( "<< type <<" ) : " << infoLog.data();
+
+			// In this simple program, we'll just leave
+			return;
+		}
 	}
 }

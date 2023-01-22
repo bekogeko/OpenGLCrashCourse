@@ -1,7 +1,8 @@
 #pragma once
 
 #include <glad/glad.h>
-#include <string.h>
+#include <string>
+#include <vector>
 #include <fstream>
 #include <sstream>
 #include <iostream>
