@@ -3,23 +3,22 @@
 
 std::string getFileContents(const char* filename)
 {
-	std::ifstream in(filename, std::ios::binary);
+	std::string content;
+	std::ifstream fileStream(filename, std::ios::in);
 
-	if (in)
-	{
-		std::string contents;
-
-		in.seekg(0, std::ios::end);
-
-		contents.resize(in.tellg());
-		in.seekg(0, std::ios::beg);
-		in.read(&contents[0], contents.size());
-		in.close();
-		return(contents);
+	if (!fileStream.is_open()) {
+		std::cerr << "Could not read file " << filename << ". File does not exist." << std::endl;
+		return "";
 	}
-	throw errno;
 
+	std::string line = "";
+	while (!fileStream.eof()) {
+		std::getline(fileStream, line);
+		content.append(line + "\n");
+	}
 
+	fileStream.close();
+	return content.c_str();
 	
 }
 
